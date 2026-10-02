@@ -1,0 +1,4 @@
+/confdrift
+/dist/
+*.test
+*.out

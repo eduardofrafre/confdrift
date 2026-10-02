@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+spec:
+  replicas: 2
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: checkout-env
+data:
+  LOG_LEVEL: debug
+  PAYMENTS_TIMEOUT_MS: "3000"
+  FEATURE_NEW_CART: "true"
+  DATABASE_URL: postgres://checkout:stg-pass@db.staging:5432/checkout
+  STRIPE_API_KEY: sk_test_123
+  RETRY_LIMIT: "5"
