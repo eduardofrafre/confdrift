@@ -109,6 +109,9 @@ waiting for a deploy.
 confdrift is free and stays free. If it caught a drift before a deploy did, you can
 [donate by PayPal](https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ).
 
+More of my work: [eduardofrafre.com](https://eduardofrafre.com), with more developer tools at
+[tools.eduardofrafre.com](https://tools.eduardofrafre.com).
+
 ## License
 
 MIT
