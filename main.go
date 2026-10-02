@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime/debug"
 	"strings"
 
 	"github.com/eduardofrafre/confdrift/internal/config"
@@ -22,7 +23,9 @@ const (
 	exitError = 2
 )
 
-var version = "dev" // set at release time with -ldflags "-X main.version=..."
+// version is set by the release build with -ldflags "-X main.version=...".
+// A go install build reports the module version instead.
+var version = "dev"
 
 const usage = `Usage: confdrift [flags] FILE FILE [FILE...]
 
@@ -71,7 +74,11 @@ func run(args []string, stdout, stderr io.Writer, tty bool) int {
 		return exitError
 	}
 	if *showVersion {
-		fmt.Fprintln(stdout, "confdrift", version)
+		v := version
+		if info, ok := debug.ReadBuildInfo(); ok && v == "dev" && info.Main.Version != "(devel)" && info.Main.Version != "" {
+			v = info.Main.Version
+		}
+		fmt.Fprintln(stdout, "confdrift", v)
 		return exitClean
 	}
 	if *format != "text" && *format != "json" {
