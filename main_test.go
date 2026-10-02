@@ -20,8 +20,8 @@ func write(t *testing.T, dir, name, content string) string {
 
 func fixtures(t *testing.T) (dev, prod string) {
 	dir := t.TempDir()
-	dev = write(t, dir, "dev.env", "LOG_LEVEL=debug\nCACHE_TTL=300\nDB_PASSWORD=devpass\nPORT=8080\n")
-	prod = write(t, dir, "prod.env", "LOG_LEVEL=info\nDB_PASSWORD=prodpass\nPORT=8080\n")
+	dev = write(t, dir, "dev.env", "LOG_LEVEL=debug\nCACHE_TTL=300\nDB_PASSWORD=example-dev\nPORT=8080\n")
+	prod = write(t, dir, "prod.env", "LOG_LEVEL=info\nDB_PASSWORD=example-prod\nPORT=8080\n")
 	return dev, prod
 }
 
@@ -46,7 +46,7 @@ func TestRunText(t *testing.T) {
 			t.Errorf("output lacks %q:\n%s", want, s)
 		}
 	}
-	if strings.Contains(s, "devpass") || strings.Contains(s, "prodpass") {
+	if strings.Contains(s, "example-dev") || strings.Contains(s, "example-prod") {
 		t.Errorf("secret printed:\n%s", s)
 	}
 	if strings.Contains(s, "\x1b[") {

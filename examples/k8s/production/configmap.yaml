@@ -5,6 +5,6 @@ metadata:
 data:
   LOG_LEVEL: info
   PAYMENTS_TIMEOUT_MS: "300"
-  DATABASE_URL: postgres://checkout:prod-pass@db.prod:5432/checkout
-  STRIPE_API_KEY: sk_live_456
+  DATABASE_URL: postgres://checkout:example@db.prod.example.com:5432/checkout
+  STRIPE_API_KEY: sk_live_example
   RETRY_LIMIT: "5"

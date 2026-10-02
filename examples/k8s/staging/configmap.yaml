@@ -13,6 +13,6 @@ data:
   LOG_LEVEL: debug
   PAYMENTS_TIMEOUT_MS: "3000"
   FEATURE_NEW_CART: "true"
-  DATABASE_URL: postgres://checkout:stg-pass@db.staging:5432/checkout
-  STRIPE_API_KEY: sk_test_123
+  DATABASE_URL: postgres://checkout:example@db.staging.example.com:5432/checkout
+  STRIPE_API_KEY: sk_test_example
   RETRY_LIMIT: "5"

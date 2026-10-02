@@ -92,11 +92,11 @@ func TestIgnoreGlobIsLiteral(t *testing.T) {
 
 func TestRedact(t *testing.T) {
 	cases := []struct{ key, in, want string }{
-		{"DB_PASSWORD", `"hunter2"`, Redacted},
-		{"stripe.apiKey", `"sk_live"`, Redacted},
-		{"GITHUB_TOKEN", `"ghp_x"`, Redacted},
-		{"DATABASE_URL", `"postgres://app:s3cret@db:5432/app"`, `"postgres://app:<redacted>@db:5432/app"`},
-		{"REDIS_URL", `"redis://:pw@cache:6379"`, `"redis://:<redacted>@cache:6379"`},
+		{"DB_PASSWORD", `"example"`, Redacted},
+		{"stripe.apiKey", `"sk_live_example"`, Redacted},
+		{"GITHUB_TOKEN", `"ghp_example"`, Redacted},
+		{"DATABASE_URL", `"postgres://app:example@db.example.com:5432/app"`, `"postgres://app:<redacted>@db.example.com:5432/app"`},
+		{"REDIS_URL", `"redis://:example@cache.example.com:6379"`, `"redis://:<redacted>@cache.example.com:6379"`},
 		{"PUBLIC_URL", `"https://example.com:8443/path"`, `"https://example.com:8443/path"`},
 		{"LOG_LEVEL", `"debug"`, `"debug"`},
 	}

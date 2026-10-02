@@ -9,8 +9,8 @@ what drifted, before you deploy.
 ```console
 $ confdrift k8s/staging/configmap.yaml k8s/production/configmap.yaml
 DATABASE_URL  changed
-  staging     "postgres://checkout:<redacted>@db.staging:5432/checkout"
-  production  "postgres://checkout:<redacted>@db.prod:5432/checkout"
+  staging     "postgres://checkout:<redacted>@db.staging.example.com:5432/checkout"
+  production  "postgres://checkout:<redacted>@db.prod.example.com:5432/checkout"
 
 FEATURE_NEW_CART  missing from production
   staging     "true"
