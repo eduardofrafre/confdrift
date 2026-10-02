@@ -239,3 +239,22 @@ func TestCanonicalFastPathsMatchEncoder(t *testing.T) {
 		}
 	}
 }
+
+func TestParseMatchesLoad(t *testing.T) {
+	path := filepath.Join("..", "..", "examples", "k8s", "staging", "configmap.yaml")
+	want, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := Parse("configmap.yaml", data)
+	if err != nil || !maps.Equal(got, want) {
+		t.Errorf("Parse = %v, %v; want %v", got, err, want)
+	}
+	if _, err := Parse("app.toml", data); err == nil {
+		t.Error("Parse(app.toml) should fail on the name, as Load does")
+	}
+}

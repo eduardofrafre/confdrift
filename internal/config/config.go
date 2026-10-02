@@ -54,7 +54,25 @@ func Load(path string) (Values, error) {
 	if err != nil {
 		return nil, err
 	}
-	var vals Values
+	return parse(path, format, data)
+}
+
+// Parse flattens data already in memory, picking the format from name as Load
+// does. It exists for callers with no file system, such as the WebAssembly
+// build behind the site's playground.
+func Parse(name string, data []byte) (Values, error) {
+	format, err := Detect(name)
+	if err != nil {
+		return nil, err
+	}
+	return parse(name, format, data)
+}
+
+func parse(path string, format Format, data []byte) (Values, error) {
+	var (
+		vals Values
+		err  error
+	)
 	switch format {
 	case Env:
 		vals, err = parseEnv(data)
