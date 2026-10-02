@@ -101,6 +101,11 @@ jobs:
 between environments, but a key defined in one and not the other is a bug
 waiting for a deploy.
 
+## Support
+
+confdrift is free and stays free. If it caught a drift before a deploy did, you can
+[donate by PayPal](https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ).
+
 ## License
 
 MIT
