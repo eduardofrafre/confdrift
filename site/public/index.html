@@ -10,6 +10,30 @@
 <link rel="alternate" hreflang="en" href="https://confdrift.tools.eduardofrafre.com/">
 <link rel="alternate" hreflang="pt-BR" href="https://confdrift.tools.eduardofrafre.com/pt-br/">
 <link rel="alternate" hreflang="x-default" href="https://confdrift.tools.eduardofrafre.com/">
+<script>
+// The root follows the browser's language until a visitor picks one with the
+// EN / PT switch. The pick is a cookie on eduardofrafre.com, so it carries over
+// to every subdomain.
+(function () {
+  var host = location.hostname, domain = /(^|\.)eduardofrafre\.com$/.test(host) ? "; Domain=eduardofrafre.com" : "";
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[hreflang]");
+    if (!a || a.host !== location.host) return;
+    var pick = /^pt/i.test(a.hreflang) ? "pt" : "en";
+    document.cookie = "lang=" + pick + domain + "; Path=/; Max-Age=31536000; SameSite=Lax";
+  });
+  if (/^\/pt-br(\/|$)/.test(location.pathname)) return;
+  var m = document.cookie.match(/(?:^|; )lang=(en|pt)/), lang = m && m[1];
+  if (!lang) {
+    var list = navigator.languages || [navigator.language || ""];
+    for (var i = 0; i < list.length; i++) {
+      var code = String(list[i]).slice(0, 2).toLowerCase();
+      if (code === "pt" || code === "en") { lang = code; break; }
+    }
+  }
+  if (lang === "pt") location.replace("/pt-br/" + location.search + location.hash);
+})();
+</script>
 <meta property="og:type" content="website">
 <meta property="og:title" content="confdrift: find config drift between environments">
 <meta property="og:description" content="Staging works. Production doesn't. confdrift tells you which config key drifted, before the deploy does.">
