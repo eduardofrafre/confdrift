@@ -31,6 +31,9 @@ STRIPE_API_KEY  changed
 5 of 6 keys drifted across 2 files (1 missing, 4 changed).
 ```
 
+Try it in the browser, on your own files, at
+[confdrift.tools.eduardofrafre.com](https://confdrift.tools.eduardofrafre.com/).
+
 One static binary with no runtime and no config file. It exits non-zero on
 drift, so it drops into CI as is.
 
