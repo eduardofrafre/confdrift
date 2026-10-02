@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>confdrift: encontre drift de configuração entre ambientes</title>
+<meta name="description" content="O confdrift compara arquivos .env, YAML, JSON e ConfigMaps do Kubernetes entre ambientes e mostra o que divergiu, antes do deploy. Um binário estático, gratuito e open source.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://confdrift.tools.eduardofrafre.com/pt-br/">
+<link rel="alternate" hreflang="en" href="https://confdrift.tools.eduardofrafre.com/">
+<link rel="alternate" hreflang="pt-BR" href="https://confdrift.tools.eduardofrafre.com/pt-br/">
+<link rel="alternate" hreflang="x-default" href="https://confdrift.tools.eduardofrafre.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="confdrift: encontre drift de configuração entre ambientes">
+<meta property="og:description" content="Em staging funciona. Em produção, não. O confdrift mostra qual chave de configuração divergiu, antes que o deploy mostre.">
+<meta property="og:url" content="https://confdrift.tools.eduardofrafre.com/pt-br/">
+<meta property="og:locale" content="pt_BR">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23000'/%3E%3Crect x='4' y='6' width='16' height='3' fill='%23e2e8e9'/%3E%3Crect x='4' y='11' width='16' height='3' fill='%23e2e8e9'/%3E%3Crect x='4' y='16' width='9' height='3' fill='%23e2e8e9'/%3E%3Crect x='15' y='16' width='5' height='3' fill='%23f2857f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/pt-br/" aria-label="confdrift, início">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="3.5" fill="#e2e8e9"/><rect x="2" y="10.25" width="20" height="3.5" fill="#e2e8e9"/><rect x="2" y="16.5" width="11" height="3.5" fill="#e2e8e9"/><rect x="15.5" y="16.5" width="6.5" height="3.5" fill="#f2857f"/></svg>
+      confdrift
+    </a>
+    <nav aria-label="Principal">
+      <a class="sec" href="#how">Como funciona</a>
+      <a class="sec" href="#try">Experimente</a>
+      <a class="sec" href="#install">Instalação</a>
+      <a class="lang" href="/" hreflang="en" lang="en">EN</a>
+      <a class="gh" href="https://github.com/eduardofrafre/confdrift">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <span class="tag">v0.1.0 · MIT · Linux, macOS, Windows</span>
+      <h1>Em staging funciona. Em produção, <em>não.</em></h1>
+      <p class="lede">Em algum ponto entre os dois, uma chave de configuração sumiu ou um timeout perdeu um zero. O <strong>confdrift</strong> compara as configurações dos seus ambientes e mostra o que divergiu, antes que o deploy mostre.</p>
+      <div class="cta">
+        <a class="btn primary" href="#try">Experimente no navegador</a>
+        <a class="btn" href="#install">Instalar</a>
+      </div>
+      <div class="oneliner"><code id="hero-cmd">go install github.com/eduardofrafre/confdrift@latest</code><button class="copy" type="button" data-copy="hero-cmd"></button></div>
+    </div>
+
+    <div class="term" role="img" aria-label="confdrift comparando um ConfigMap de staging com um de produção: cinco de seis chaves divergiram, uma ausente em produção e quatro alteradas.">
+      <div class="bar"><i></i><i></i><i></i><span>~/checkout</span></div>
+<pre><span class="c-prompt">$</span> confdrift staging/configmap.yaml production/configmap.yaml
+<span class="c-b">DATABASE_URL</span>  <span class="c-y">changed</span>
+  staging     "postgres://checkout:&lt;redacted&gt;@db.staging.example.com:5432/checkout"
+  production  "postgres://checkout:&lt;redacted&gt;@db.prod.example.com:5432/checkout"
+
+<span class="c-b">FEATURE_NEW_CART</span>  <span class="c-r">missing from production</span>
+  staging     "true"
+  production  <span class="c-d">(not set)</span>
+
+<span class="c-b">LOG_LEVEL</span>  <span class="c-y">changed</span>
+  staging     "debug"
+  production  "info"
+
+<span class="c-b">PAYMENTS_TIMEOUT_MS</span>  <span class="c-y">changed</span>
+  staging     "3000"
+  production  "300"
+
+<span class="c-b">STRIPE_API_KEY</span>  <span class="c-y">changed</span>
+  staging     &lt;redacted&gt;
+  production  &lt;redacted&gt;
+
+5 of 6 keys drifted across 2 files (1 missing, 4 changed).
+<span class="c-prompt">$</span> echo $?
+1</pre>
+    </div>
+  </div>
+</div>
+
+<section id="why">
+  <div class="wrap">
+    <p class="kicker">O problema</p>
+    <h2>Todo time com dois ambientes tem duas configurações que discordam em silêncio.</h2>
+    <div class="why">
+      <div>
+        <span class="n">01</span>
+        <h3>O diff compara linhas, não configurações</h3>
+        <p>Chaves em outra ordem, outra indentação, ou um YAML ao lado de um JSON, e o <code>diff</code> mostra ruído em todo lugar e a mudança real em lugar nenhum.</p>
+      </div>
+      <div>
+        <span class="n">02</span>
+        <h3>O drift perigoso é pequeno</h3>
+        <p>Uma feature flag que só existe em staging. Um timeout de <code>300</code> onde deveria ser <code>3000</code>. Um número que virou string. Ninguém vê isso no code review.</p>
+      </div>
+      <div>
+        <span class="n">03</span>
+        <h3>Ele aparece como incidente</h3>
+        <p>O drift fica invisível até o código que depende dele chegar em produção. O confdrift traz esse momento para o pull request.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <p class="kicker">Como funciona</p>
+    <h2>Lê todo arquivo do mesmo jeito e compara chave por chave.</h2>
+    <p class="intro">O confdrift nunca compara texto. Ele transforma cada arquivo numa lista plana de caminhos de chave com valores tipados, então formato, ordem e indentação deixam de importar, e só sobram as diferenças reais.</p>
+
+    <div class="steps">
+      <article class="step">
+        <header>
+          <span class="n">1 · Ler</span>
+          <h3>Achata qualquer formato</h3>
+          <p>.env, YAML, JSON e ConfigMaps do Kubernetes. O formato vem do nome do arquivo; chaves aninhadas viram caminhos.</p>
+        </header>
+        <div class="viz flat">
+<pre><span class="c-d"># app.yaml</span>
+db:
+  host: db.internal
+  pool:
+    max: 20</pre>
+          <span class="arrow">vira</span>
+<pre>db.host      "db.internal"
+db.pool.max  20</pre>
+        </div>
+      </article>
+
+      <article class="step">
+        <header>
+          <span class="n">2 · Comparar</span>
+          <h3>Alinha todas as chaves</h3>
+          <p>Cada chave é conferida em todos os arquivos de uma vez, sejam dois ambientes ou dez. Uma chave está igual, alterada ou ausente em algum deles.</p>
+        </header>
+        <div class="viz">
+          <table class="keys">
+            <thead><tr><th>chave</th><th>stg</th><th>prod</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>RETRY_LIMIT</td><td>"5"</td><td>"5"</td><td><span class="pill same">igual</span></td></tr>
+              <tr><td>TIMEOUT_MS</td><td>"3000"</td><td>"300"</td><td><span class="pill changed">alterada</span></td></tr>
+              <tr><td>NEW_CART</td><td>"true"</td><td class="dim">-</td><td><span class="pill missing">ausente</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="step">
+        <header>
+          <span class="n">3 · Relatar</span>
+          <h3>Avisa as pessoas e o CI</h3>
+          <p>Um relatório legível para você, JSON para scripts, credenciais ocultadas, e um código de saída que o pipeline entende.</p>
+        </header>
+        <div class="viz exits">
+          <div><b class="c-g">0</b><span>Os arquivos concordam</span></div>
+          <div><b class="c-y">1</b><span>Drift encontrado</span></div>
+          <div><b class="c-r">2</b><span>Entrada inválida: arquivo ilegível, erro de parse</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="wrap">
+    <p class="kicker">Experimente</p>
+    <h2>Edite os arquivos e veja o relatório mudar.</h2>
+    <p class="intro">Este é o motor real do confdrift compilado para WebAssembly, rodando no seu navegador. Nada do que você digita sai desta página. Renomeie um arquivo para mudar o formato.</p>
+
+    <div class="play" id="playground">
+      <div class="play-head">
+        <span class="label">Exemplos</span>
+        <div class="presets">
+          <button class="chip" type="button" data-preset="k8s">ConfigMaps</button>
+          <button class="chip" type="button" data-preset="dotenv">Arquivos .env</button>
+          <button class="chip" type="button" data-preset="formats">YAML x JSON</button>
+          <button class="chip" type="button" data-preset="three">Três ambientes</button>
+        </div>
+      </div>
+      <div class="files"></div>
+      <div class="opts">
+        <label><input type="checkbox" id="opt-keys"> --keys-only</label>
+        <label class="ignore">--ignore <input id="opt-ignore" spellcheck="false" placeholder="DATABASE_* *_URL"></label>
+        <label><input type="checkbox" id="opt-secrets"> --show-secrets</label>
+        <button class="chip add" type="button">+ ambiente</button>
+      </div>
+      <div class="cmdline" aria-live="off"></div>
+      <div class="out-head">
+        <div role="tablist" aria-label="Formato da saída">
+          <button class="tab" role="tab" type="button" aria-selected="true" data-view="text">text</button>
+          <button class="tab" role="tab" type="button" aria-selected="false" tabindex="-1" data-view="json">json</button>
+        </div>
+        <span class="exit" aria-live="polite"></span>
+      </div>
+      <pre class="out" aria-live="polite"></pre>
+      <p class="play-foot">As mesmas regras da CLI: o tipo conta, então <code>5432</code> e <code>"5432"</code> são diferentes, e chaves que parecem credenciais são comparadas mas impressas como <code>&lt;redacted&gt;</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section id="use">
+  <div class="wrap">
+    <p class="kicker">Uso</p>
+    <h2>Um comando, poucas flags, nenhum arquivo de configuração.</h2>
+
+    <div class="ref">
+      <div>
+        <h3>Comandos do dia a dia</h3>
+<pre class="code"><span class="cm"># dois ambientes</span>
+confdrift .env.staging .env.production
+<span class="cm"># ou quantos você tiver</span>
+confdrift dev.yaml staging.yaml prod.yaml
+<span class="cm"># só chaves ausentes em algum lugar</span>
+confdrift a.env b.env --keys-only
+<span class="cm"># ignora chaves que devem mesmo diferir</span>
+confdrift a.env b.env --ignore 'DATABASE_*'
+<span class="cm"># para scripts e bots</span>
+confdrift a.env b.env --format json</pre>
+        <p>As flags podem vir antes ou depois dos nomes de arquivo. <code>--ignore</code> aceita o curinga <code>*</code> e pode ser repetido.</p>
+      </div>
+
+      <div>
+        <h3>No CI</h3>
+<pre class="code"><span class="cm"># .github/workflows/config-drift.yml</span>
+on: pull_request
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+      - run: go run github.com/eduardofrafre/confdrift@latest --keys-only deploy/staging.env deploy/production.env</pre>
+        <p>Num pipeline, <code>--keys-only</code> costuma ser o que você quer: valores diferem entre ambientes por natureza, mas uma chave definida num e não no outro é um bug esperando o próximo deploy.</p>
+      </div>
+
+      <div>
+        <h3>Formatos</h3>
+        <ul>
+          <li><strong>dotenv</strong>: <code>.env</code>, <code>.env.production</code>, <code>prod.env</code>. Entende aspas, <code>export</code>, comentários e valores de várias linhas. <code>${VARS}</code> não são expandidas: se a referência mudou, isso é drift.</li>
+          <li><strong>YAML e JSON</strong> viram os mesmos caminhos, como <code>db.pool.max</code> ou <code>servers[0]</code>, então dá para comparar um YAML com um JSON.</li>
+          <li><strong>ConfigMaps do Kubernetes</strong> são comparados pelas chaves de <code>data</code>. A saída de <code>helm template</code> ou <code>kustomize build</code> funciona direto: os outros recursos são ignorados.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Segredos</h3>
+        <p>Valores de chaves que parecem credenciais (<code>*PASSWORD*</code>, <code>*TOKEN*</code>, <code>*SECRET*</code>, <code>*API_KEY*</code> e parecidas) saem como <code>&lt;redacted&gt;</code>, assim como senhas dentro de URLs. Eles continuam sendo comparados, então um segredo rotacionado ainda aparece como drift. <code>--show-secrets</code> mostra os valores.</p>
+        <table class="plain">
+          <thead><tr><th>saída</th><th>significado</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>Os arquivos concordam</td></tr>
+            <tr><td>1</td><td>Drift encontrado</td></tr>
+            <tr><td>2</td><td>Entrada inválida: arquivo ilegível, erro de parse, flag desconhecida</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <p class="kicker">Instalação</p>
+    <h2>Um binário estático. Sem runtime, sem dependências.</h2>
+    <p class="intro">Cerca de 3 MB, e compara uma configuração real em poucos milissegundos. Escolha sua plataforma:</p>
+
+    <div class="install">
+      <div role="tablist" aria-label="Plataforma" data-platform>
+        <button class="tab" role="tab" type="button" data-os="linux" aria-selected="true" aria-controls="i-linux" id="t-linux">Linux</button>
+        <button class="tab" role="tab" type="button" data-os="mac" aria-selected="false" aria-controls="i-mac" id="t-mac" tabindex="-1">macOS</button>
+        <button class="tab" role="tab" type="button" data-os="win" aria-selected="false" aria-controls="i-win" id="t-win" tabindex="-1">Windows</button>
+        <button class="tab" role="tab" type="button" data-os="go" aria-selected="false" aria-controls="i-go" id="t-go" tabindex="-1">Go</button>
+      </div>
+      <div role="tabpanel" id="i-linux" aria-labelledby="t-linux">
+        <p>Exemplo para x86-64; em ARM troque <code>amd64</code> por <code>arm64</code>.</p>
+        <div class="codebox"><pre class="code" id="c-linux">curl -sL https://github.com/eduardofrafre/confdrift/releases/download/v0.1.0/confdrift_0.1.0_linux_amd64.tar.gz | tar xz
+sudo mv confdrift_0.1.0_linux_amd64/confdrift /usr/local/bin/
+confdrift --version</pre><button class="copy" type="button" data-copy="c-linux"></button></div>
+      </div>
+      <div role="tabpanel" id="i-mac" aria-labelledby="t-mac" hidden>
+        <p>Exemplo para Apple silicon; num Mac Intel troque <code>arm64</code> por <code>amd64</code>.</p>
+        <div class="codebox"><pre class="code" id="c-mac">curl -sL https://github.com/eduardofrafre/confdrift/releases/download/v0.1.0/confdrift_0.1.0_darwin_arm64.tar.gz | tar xz
+sudo mv confdrift_0.1.0_darwin_arm64/confdrift /usr/local/bin/
+confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></button></div>
+      </div>
+      <div role="tabpanel" id="i-win" aria-labelledby="t-win" hidden>
+        <p>Baixe o <a class="ln" href="https://github.com/eduardofrafre/confdrift/releases/download/v0.1.0/confdrift_0.1.0_windows_amd64.zip">confdrift_0.1.0_windows_amd64.zip</a> (ou a <a class="ln" href="https://github.com/eduardofrafre/confdrift/releases/download/v0.1.0/confdrift_0.1.0_windows_arm64.zip">versão arm64</a>), descompacte e coloque o <code>confdrift.exe</code> no seu <code>PATH</code>. Depois, no PowerShell:</p>
+        <div class="codebox"><pre class="code" id="c-win">confdrift .env.staging .env.production</pre><button class="copy" type="button" data-copy="c-win"></button></div>
+      </div>
+      <div role="tabpanel" id="i-go" aria-labelledby="t-go" hidden>
+        <p>Com Go 1.24 ou mais recente:</p>
+        <div class="codebox"><pre class="code" id="c-go">go install github.com/eduardofrafre/confdrift@latest</pre><button class="copy" type="button" data-copy="c-go"></button></div>
+        <p>Todos os builds, com checksums, estão na <a class="ln" href="https://github.com/eduardofrafre/confdrift/releases">página de releases</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="close">
+  <div class="wrap">
+    <div>
+      <p class="kicker">Open source</p>
+      <h2>Gratuito, licença MIT, desenvolvido em público.</h2>
+      <p>Achou um drift que o confdrift deixou passar, ou um formato que ele deveria ler? <a class="ln" href="https://github.com/eduardofrafre/confdrift/issues">Abra uma issue</a>. Se ele pegou algo antes do deploy, você pode <a class="ln" href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ">apoiar pelo PayPal</a>.</p>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/eduardofrafre/confdrift">Ver no GitHub</a>
+      <a class="btn" href="https://github.com/eduardofrafre/confdrift/releases">Releases</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Feito por <a class="ln" href="https://eduardofrafre.com/pt-br/">Eduardo Freitas</a></span>
+    <nav aria-label="Rodapé">
+      <a href="https://github.com/eduardofrafre/confdrift">GitHub</a>
+      <a href="https://github.com/eduardofrafre/confdrift/blob/main/LICENSE">Licença MIT</a>
+      <a href="/" hreflang="en" lang="en">English</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/assets/site.js" defer></script>
+</body>
+</html>

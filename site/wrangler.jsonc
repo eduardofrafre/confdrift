@@ -1,0 +1,14 @@
+{
+  "name": "confdrift-site",
+  "compatibility_date": "2026-10-02",
+  "workers_dev": true,
+  "build": {
+    "command": "sh build.sh"
+  },
+  "assets": {
+    "directory": "./public"
+  },
+  "routes": [
+    { "pattern": "confdrift.tools.eduardofrafre.com", "custom_domain": true }
+  ]
+}

@@ -2,3 +2,6 @@
 /dist/
 *.test
 *.out
+/site/public/assets/engine.wasm
+/site/public/assets/wasm_exec.js
+/site/.wrangler/
