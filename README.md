@@ -36,6 +36,9 @@ drift, so it drops into CI as is.
 
 ## Install
 
+Download a binary for Linux, macOS or Windows from
+[Releases](https://github.com/eduardofrafre/confdrift/releases), or build it:
+
 ```sh
 go install github.com/eduardofrafre/confdrift@latest
 ```
