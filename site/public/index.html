@@ -356,7 +356,8 @@ confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></
       if (ask) box.querySelector('[data-pay="' + ask[1] + '"]').classList.add("on");
       btn.addEventListener("click", function () {
         var done = function () { st.textContent = btn.dataset.done; setTimeout(function () { st.textContent = ""; }, 4000); };
-        navigator.clipboard ? navigator.clipboard.writeText(btn.dataset.pix).then(done) : prompt("Pix key", btn.dataset.pix);
+        var show = function () { st.textContent = btn.dataset.pix; getSelection().selectAllChildren(st); };
+        navigator.clipboard ? navigator.clipboard.writeText(btn.dataset.pix).then(done, show) : show();
       });
     })();
     </script>
