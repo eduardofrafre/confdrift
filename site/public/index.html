@@ -343,17 +343,22 @@ confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></
       <p class="lead">A donation pays for the hosting and the hours that keep confdrift going.</p>
       <p class="ft-ways"><a href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ" target="_blank" rel="noopener">PayPal</a><button type="button" data-pix="00020126580014br.gov.bcb.pix01369e1497a0-9a23-4910-9937-f5cec7c85f4b5204000053039865802BR5915EDUARDO FREITAS6008CRICIUMA62070503***6304BCD9" data-done="Copied, paste it in your bank app">Copy the Pix code</button><span role="status"></span></p>
     </div>
-    <div class="ft-qr">
-      <a href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ&amp;source=qr" target="_blank" rel="noopener"><figure data-pay="paypal"><img src="/assets/donate-qr.svg" width="132" height="132" alt="QR code for the PayPal donation page"><figcaption>PayPal</figcaption></figure></a>
-      <figure data-pay="pix"><img src="/assets/donate-pix.svg" width="132" height="132" alt="Pix QR code for a donation of any amount"><figcaption>Pix</figcaption></figure>
+    <div class="ft-qr" data-pay="paypal">
+      <div class="ft-switch" role="group" aria-label="Payment method"><button type="button" data-to="paypal">PayPal</button><button type="button" data-to="pix">Pix</button></div>
+      <a class="ft-paypal" href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ&amp;source=qr" target="_blank" rel="noopener"><figure><img src="/assets/donate-qr.svg" width="140" height="140" alt="QR code for the PayPal donation page"><figcaption>scan to donate</figcaption></figure></a>
+      <figure class="ft-pix"><img src="/assets/donate-pix.svg" width="140" height="140" alt="Pix QR code for a donation of any amount"><figcaption>scan in your bank app</figcaption></figure>
     </div>
     <script>
     // Pix has no web link, only a code: on a phone the way in is copying it into
-    // the bank app. A link with ?pay=pix or ?pay=paypal (the READMEs) marks that QR.
+    // the bank app. English pages open on PayPal, Portuguese on Pix, unless the link
+    // asks for one with ?pay=pix or ?pay=paypal (the READMEs do).
     (function () {
       var box = document.currentScript.parentElement, btn = box.querySelector("[data-pix]"), st = btn.nextElementSibling;
+      var qr = box.querySelector(".ft-qr"), sw = qr.querySelectorAll("[data-to]");
+      function pick(m) { qr.dataset.pay = m; sw.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.to === m); }); }
+      sw.forEach(function (b) { b.addEventListener("click", function () { pick(b.dataset.to); }); });
       var ask = /[?&]pay=(pix|paypal)\b/.exec(location.search);
-      if (ask) box.querySelector('[data-pay="' + ask[1] + '"]').classList.add("on");
+      pick(ask ? ask[1] : qr.dataset.pay);
       btn.addEventListener("click", function () {
         var done = function () { st.textContent = btn.dataset.done; setTimeout(function () { st.textContent = ""; }, 4000); };
         var show = function () { st.textContent = btn.dataset.pix; getSelection().selectAllChildren(st); };

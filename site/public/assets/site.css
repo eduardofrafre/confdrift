@@ -227,11 +227,17 @@ footer.ft { display: block; padding: 0; margin: 0; border-top: 1px solid var(--l
 .ft-ways a { text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px; }
 .ft-ways button:hover { color: var(--voice-ink); }
 .ft .ft-ways [role=status] { overflow-wrap: anywhere; user-select: all; }
-.ft-qr { display: flex; gap: 16px; }
-.ft-qr figure { margin: 0; width: 132px; padding: 8px; border: 1px solid var(--line); background: var(--raised); transition: border-color .2s, box-shadow .2s; }
-.ft-qr a:hover figure, .ft-qr figure.on { border-color: var(--voice); box-shadow: 0 0 0 1px var(--voice); }
+.ft-qr { width: 158px; }
+.ft-switch { display: flex; margin-bottom: 10px; border: 1px solid var(--line); }
+.ft-switch button { flex: 1; font: inherit; color: var(--ink-3); background: none; border: 0; padding: 4px 0; cursor: pointer; transition: color .2s, background .2s; }
+.ft-switch button + button { border-left: 1px solid var(--line); }
+.ft-switch button:hover { color: var(--ink); }
+.ft-switch [aria-pressed="true"] { color: var(--ink); background: var(--raised); }
+.ft-qr figure { margin: 0; padding: 8px; border: 1px solid var(--line); background: var(--raised); transition: border-color .2s; }
+.ft-qr a:hover figure { border-color: var(--voice); }
 .ft-qr img { display: block; width: 100%; height: auto; image-rendering: pixelated; }
-.ft-qr figcaption { margin-top: 6px; text-align: center; color: var(--ink-3); white-space: nowrap; }
+.ft-qr figcaption { margin-top: 6px; text-align: center; color: var(--ink-3); }
+.ft-qr[data-pay="paypal"] .ft-pix, .ft-qr[data-pay="pix"] .ft-paypal { display: none; }
 .ft-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-block: 36px 40px; }
 .ft-cols ul { list-style: none; margin: 0; padding: 0; }
 .ft-cols b { font-weight: 400; color: var(--ink); }
