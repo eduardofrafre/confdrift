@@ -69,7 +69,7 @@
     <div>
       <span class="tag">v0.1.0 · MIT · Linux, macOS, Windows</span>
       <h1>Staging works. Production <em>doesn't.</em></h1>
-      <p class="lede">Somewhere between the two, a config key went missing or a timeout lost a zero. <strong>confdrift</strong> compares your environment configs and tells you what drifted, before the deploy does.</p>
+      <p class="lede"><strong>confdrift</strong> compares your environment configs and tells you what drifted, before the deploy does.</p>
       <div class="cta">
         <a class="btn primary" href="#try">Try it in the browser</a>
         <a class="btn" href="#install">Install</a>
@@ -115,17 +115,14 @@
       <div>
         <span class="n">01</span>
         <h3>diff compares lines, not settings</h3>
-        <p>Reordered keys, different indentation or a YAML file next to a JSON one, and <code>diff</code> shows noise everywhere and the real change nowhere.</p>
       </div>
       <div>
         <span class="n">02</span>
         <h3>The dangerous drift is small</h3>
-        <p>A feature flag that only exists in staging. A timeout of <code>300</code> where it should be <code>3000</code>. A number that turned into a string. Nobody sees it in review.</p>
       </div>
       <div>
         <span class="n">03</span>
         <h3>It surfaces as an incident</h3>
-        <p>Drift is invisible until the code that depends on it reaches production. confdrift moves that moment to a pull request.</p>
       </div>
     </div>
   </div>
@@ -135,14 +132,12 @@
   <div class="wrap">
     <p class="kicker">How it works</p>
     <h2>Read every file the same way, then compare key by key.</h2>
-    <p class="intro">confdrift never compares text. It turns each file into a flat list of key paths and typed values, so formats, ordering and indentation stop mattering, and only real differences are left.</p>
 
     <div class="steps">
       <article class="step">
         <header>
           <span class="n">1 · Read</span>
           <h3>Flatten any format</h3>
-          <p>.env, YAML, JSON and Kubernetes ConfigMaps. The format comes from the file name; nested keys become paths.</p>
         </header>
         <div class="viz flat">
 <pre><span class="c-d"># app.yaml</span>
@@ -160,7 +155,6 @@ db.pool.max  20</pre>
         <header>
           <span class="n">2 · Compare</span>
           <h3>Line up every key</h3>
-          <p>Each key is checked across all the files at once, two environments or ten. A key is the same, changed, or missing somewhere.</p>
         </header>
         <div class="viz">
           <table class="keys">
@@ -178,7 +172,6 @@ db.pool.max  20</pre>
         <header>
           <span class="n">3 · Report</span>
           <h3>Tell people, and tell CI</h3>
-          <p>A readable report for you, JSON for scripts, credentials redacted, and an exit code a pipeline can act on.</p>
         </header>
         <div class="viz exits">
           <div><b class="c-g">0</b><span>The files agree</span></div>
@@ -194,7 +187,7 @@ db.pool.max  20</pre>
   <div class="wrap">
     <p class="kicker">Try it</p>
     <h2>Edit the files and watch the report change.</h2>
-    <p class="intro">This is the real confdrift engine compiled to WebAssembly, running in your browser. Nothing you type leaves this page. Rename a file to change its format.</p>
+    <p class="intro">The real engine, compiled to WebAssembly. Nothing you type leaves this page.</p>
 
     <div class="play" id="playground">
       <div class="play-head">
@@ -222,7 +215,6 @@ db.pool.max  20</pre>
         <span class="exit" aria-live="polite"></span>
       </div>
       <pre class="out" aria-live="polite"></pre>
-      <p class="play-foot">Same rules as the CLI: types count, so <code>5432</code> and <code>"5432"</code> differ, and keys that look like credentials are compared but printed as <code>&lt;redacted&gt;</code>.</p>
     </div>
   </div>
 </section>
@@ -245,7 +237,6 @@ confdrift a.env b.env --keys-only
 confdrift a.env b.env --ignore 'DATABASE_*'
 <span class="cm"># for scripts and bots</span>
 confdrift a.env b.env --format json</pre>
-        <p>Flags can go before or after the file names. <code>--ignore</code> takes <code>*</code> wildcards and can be repeated.</p>
       </div>
 
       <div>
@@ -259,9 +250,12 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
       - run: go run github.com/eduardofrafre/confdrift@latest --keys-only deploy/staging.env deploy/production.env</pre>
-        <p><code>--keys-only</code> is usually what a pipeline wants: values are expected to differ between environments, but a key defined in one and not the other is a bug waiting for a deploy.</p>
       </div>
 
+    </div>
+    <details class="more">
+      <summary>Formats, secrets and exit codes</summary>
+      <div class="ref">
       <div>
         <h3>Formats</h3>
         <ul>
@@ -283,7 +277,8 @@ jobs:
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -291,7 +286,6 @@ jobs:
   <div class="wrap">
     <p class="kicker">Install</p>
     <h2>One static binary. No runtime, no dependencies.</h2>
-    <p class="intro">About 3 MB, and it compares a real config in a couple of milliseconds. Pick your platform:</p>
 
     <div class="install">
       <div role="tablist" aria-label="Platform" data-platform>
@@ -330,7 +324,7 @@ confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></
     <div>
       <p class="kicker">Open source</p>
       <h2>Free, MIT licensed, and built in the open.</h2>
-      <p>Found drift confdrift missed, or a format it should read? <a class="ln" href="https://github.com/eduardofrafre/confdrift/issues" target="_blank" rel="noopener">Open an issue</a>. If it caught something before a deploy did, you can <a class="ln" href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ" target="_blank" rel="noopener">support it by PayPal</a> or <a class="ln" href="https://eduardofrafre.com/?pay=pix#support">Pix</a>.</p>
+      <p>Found drift it missed, or a format it should read? <a class="ln" href="https://github.com/eduardofrafre/confdrift/issues" target="_blank" rel="noopener">Open an issue</a>.</p>
     </div>
     <div class="cta">
       <a class="btn primary" href="https://github.com/eduardofrafre/confdrift" target="_blank" rel="noopener">View on GitHub</a>
@@ -341,14 +335,37 @@ confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></
 
 </main>
 
-<footer class="foot">
-  <div class="wrap">
-    <span>Made by <a class="ln" href="https://eduardofrafre.com/">Eduardo Freitas</a> · <a class="ln" href="https://tools.eduardofrafre.com/">More tools</a></span>
-    <nav aria-label="Footer">
-      <a href="https://github.com/eduardofrafre/confdrift" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://github.com/eduardofrafre/confdrift/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a>
-      <a href="/pt-br/" hreflang="pt-BR" lang="pt-BR">Português</a>
-    </nav>
+<footer class="ft">
+  <section id="support" class="wrap ft-give" aria-labelledby="ft-give-h">
+    <div>
+      <p class="k">Support</p>
+      <h2 id="ft-give-h">Free, and staying free.</h2>
+      <p class="lead">A donation pays for the hosting and the hours that keep confdrift going.</p>
+      <p class="ft-ways"><a href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ" target="_blank" rel="noopener">PayPal</a><button type="button" data-pix="00020126580014br.gov.bcb.pix01369e1497a0-9a23-4910-9937-f5cec7c85f4b5204000053039865802BR5915EDUARDO FREITAS6008CRICIUMA62070503***6304BCD9" data-done="Copied, paste it in your bank app">Copy the Pix code</button><span role="status"></span></p>
+    </div>
+    <div class="ft-qr">
+      <a href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ&amp;source=qr" target="_blank" rel="noopener"><figure data-pay="paypal"><img src="/assets/donate-qr.svg" width="132" height="132" alt="QR code for the PayPal donation page"><figcaption>PayPal</figcaption></figure></a>
+      <figure data-pay="pix"><img src="/assets/donate-pix.svg" width="132" height="132" alt="Pix QR code for a donation of any amount"><figcaption>Pix</figcaption></figure>
+    </div>
+    <script>
+    // Pix has no web link, only a code: on a phone the way in is copying it into
+    // the bank app. A link with ?pay=pix or ?pay=paypal (the READMEs) marks that QR.
+    (function () {
+      var box = document.currentScript.parentElement, btn = box.querySelector("[data-pix]"), st = btn.nextElementSibling;
+      var ask = /[?&]pay=(pix|paypal)\b/.exec(location.search);
+      if (ask) box.querySelector('[data-pay="' + ask[1] + '"]').classList.add("on");
+      btn.addEventListener("click", function () {
+        var done = function () { st.textContent = btn.dataset.done; setTimeout(function () { st.textContent = ""; }, 4000); };
+        navigator.clipboard ? navigator.clipboard.writeText(btn.dataset.pix).then(done) : prompt("Pix key", btn.dataset.pix);
+      });
+    })();
+    </script>
+  </section>
+  <div class="wrap ft-cols">
+    <div><p><b>confdrift</b></p><p>by <a href="https://eduardofrafre.com/">Eduardo Freitas</a></p><p><a href="https://github.com/eduardofrafre/confdrift/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a> · 2026</p></div>
+    <nav aria-label="Sites"><p class="k">Sites</p><ul><li><a href="https://eduardofrafre.com/">eduardofrafre.com</a></li><li><a href="https://lab.eduardofrafre.com/">Lab</a></li><li><a href="https://tools.eduardofrafre.com/">Tools</a></li><li><a href="https://studio.eduardofrafre.com/">Studio</a></li></ul></nav>
+    <div><p class="k">Contact</p><ul><li><a href="mailto:contact@eduardofrafre.com">contact@eduardofrafre.com</a></li><li><a href="https://github.com/eduardofrafre" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://www.linkedin.com/in/eduardofrafre" target="_blank" rel="noopener">LinkedIn</a></li></ul></div>
+    <div><p class="k">Colophon</p><p>Set in IBM Plex Sans and Mono.</p></div>
   </div>
 </footer>
 

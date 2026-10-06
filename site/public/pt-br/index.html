@@ -70,7 +70,7 @@
     <div>
       <span class="tag">v0.1.0 · MIT · Linux, macOS, Windows</span>
       <h1>Em staging funciona. Em produção, <em>não.</em></h1>
-      <p class="lede">Em algum ponto entre os dois, uma chave de configuração sumiu ou um timeout perdeu um zero. O <strong>confdrift</strong> compara as configurações dos seus ambientes e mostra o que divergiu, antes que o deploy mostre.</p>
+      <p class="lede">O <strong>confdrift</strong> compara as configurações dos seus ambientes e mostra o que divergiu, antes que o deploy mostre.</p>
       <div class="cta">
         <a class="btn primary" href="#try">Experimente no navegador</a>
         <a class="btn" href="#install">Instalar</a>
@@ -116,17 +116,14 @@
       <div>
         <span class="n">01</span>
         <h3>O diff compara linhas, não configurações</h3>
-        <p>Chaves em outra ordem, outra indentação, ou um YAML ao lado de um JSON, e o <code>diff</code> mostra ruído em todo lugar e a mudança real em lugar nenhum.</p>
       </div>
       <div>
         <span class="n">02</span>
         <h3>O drift perigoso é pequeno</h3>
-        <p>Uma feature flag que só existe em staging. Um timeout de <code>300</code> onde deveria ser <code>3000</code>. Um número que virou string. Ninguém vê isso no code review.</p>
       </div>
       <div>
         <span class="n">03</span>
         <h3>Ele aparece como incidente</h3>
-        <p>O drift fica invisível até o código que depende dele chegar em produção. O confdrift traz esse momento para o pull request.</p>
       </div>
     </div>
   </div>
@@ -136,14 +133,12 @@
   <div class="wrap">
     <p class="kicker">Como funciona</p>
     <h2>Lê todo arquivo do mesmo jeito e compara chave por chave.</h2>
-    <p class="intro">O confdrift nunca compara texto. Ele transforma cada arquivo numa lista plana de caminhos de chave com valores tipados, então formato, ordem e indentação deixam de importar, e só sobram as diferenças reais.</p>
 
     <div class="steps">
       <article class="step">
         <header>
           <span class="n">1 · Ler</span>
           <h3>Achata qualquer formato</h3>
-          <p>.env, YAML, JSON e ConfigMaps do Kubernetes. O formato vem do nome do arquivo; chaves aninhadas viram caminhos.</p>
         </header>
         <div class="viz flat">
 <pre><span class="c-d"># app.yaml</span>
@@ -161,7 +156,6 @@ db.pool.max  20</pre>
         <header>
           <span class="n">2 · Comparar</span>
           <h3>Alinha todas as chaves</h3>
-          <p>Cada chave é conferida em todos os arquivos de uma vez, sejam dois ambientes ou dez. Uma chave está igual, alterada ou ausente em algum deles.</p>
         </header>
         <div class="viz">
           <table class="keys">
@@ -179,7 +173,6 @@ db.pool.max  20</pre>
         <header>
           <span class="n">3 · Relatar</span>
           <h3>Avisa as pessoas e o CI</h3>
-          <p>Um relatório legível para você, JSON para scripts, credenciais ocultadas, e um código de saída que o pipeline entende.</p>
         </header>
         <div class="viz exits">
           <div><b class="c-g">0</b><span>Os arquivos concordam</span></div>
@@ -195,7 +188,7 @@ db.pool.max  20</pre>
   <div class="wrap">
     <p class="kicker">Experimente</p>
     <h2>Edite os arquivos e veja o relatório mudar.</h2>
-    <p class="intro">Este é o motor real do confdrift compilado para WebAssembly, rodando no seu navegador. Nada do que você digita sai desta página. Renomeie um arquivo para mudar o formato.</p>
+    <p class="intro">O motor real, compilado para WebAssembly. Nada do que você digita sai desta página.</p>
 
     <div class="play" id="playground">
       <div class="play-head">
@@ -223,7 +216,6 @@ db.pool.max  20</pre>
         <span class="exit" aria-live="polite"></span>
       </div>
       <pre class="out" aria-live="polite"></pre>
-      <p class="play-foot">As mesmas regras da CLI: o tipo conta, então <code>5432</code> e <code>"5432"</code> são diferentes, e chaves que parecem credenciais são comparadas mas impressas como <code>&lt;redacted&gt;</code>.</p>
     </div>
   </div>
 </section>
@@ -246,7 +238,6 @@ confdrift a.env b.env --keys-only
 confdrift a.env b.env --ignore 'DATABASE_*'
 <span class="cm"># para scripts e bots</span>
 confdrift a.env b.env --format json</pre>
-        <p>As flags podem vir antes ou depois dos nomes de arquivo. <code>--ignore</code> aceita o curinga <code>*</code> e pode ser repetido.</p>
       </div>
 
       <div>
@@ -260,9 +251,12 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
       - run: go run github.com/eduardofrafre/confdrift@latest --keys-only deploy/staging.env deploy/production.env</pre>
-        <p>Num pipeline, <code>--keys-only</code> costuma ser o que você quer: valores diferem entre ambientes por natureza, mas uma chave definida num e não no outro é um bug esperando o próximo deploy.</p>
       </div>
 
+    </div>
+    <details class="more">
+      <summary>Formatos, segredos e códigos de saída</summary>
+      <div class="ref">
       <div>
         <h3>Formatos</h3>
         <ul>
@@ -284,7 +278,8 @@ jobs:
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -292,7 +287,6 @@ jobs:
   <div class="wrap">
     <p class="kicker">Instalação</p>
     <h2>Um binário estático. Sem runtime, sem dependências.</h2>
-    <p class="intro">Cerca de 3 MB, e compara uma configuração real em poucos milissegundos. Escolha sua plataforma:</p>
 
     <div class="install">
       <div role="tablist" aria-label="Plataforma" data-platform>
@@ -331,7 +325,7 @@ confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></
     <div>
       <p class="kicker">Open source</p>
       <h2>Gratuito, licença MIT, desenvolvido em público.</h2>
-      <p>Achou um drift que o confdrift deixou passar, ou um formato que ele deveria ler? <a class="ln" href="https://github.com/eduardofrafre/confdrift/issues" target="_blank" rel="noopener">Abra uma issue</a>. Se ele pegou algo antes do deploy, você pode <a class="ln" href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ" target="_blank" rel="noopener">apoiar pelo PayPal</a> ou por <a class="ln" href="https://eduardofrafre.com/pt-br/?pay=pix#support">Pix</a>.</p>
+      <p>Achou um drift que ele deixou passar, ou um formato que ele deveria ler? <a class="ln" href="https://github.com/eduardofrafre/confdrift/issues" target="_blank" rel="noopener">Abra uma issue</a>.</p>
     </div>
     <div class="cta">
       <a class="btn primary" href="https://github.com/eduardofrafre/confdrift" target="_blank" rel="noopener">Ver no GitHub</a>
@@ -342,14 +336,37 @@ confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></
 
 </main>
 
-<footer class="foot">
-  <div class="wrap">
-    <span>Feito por <a class="ln" href="https://eduardofrafre.com/pt-br/">Eduardo Freitas</a> · <a class="ln" href="https://tools.eduardofrafre.com/">Mais ferramentas</a></span>
-    <nav aria-label="Rodapé">
-      <a href="https://github.com/eduardofrafre/confdrift" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://github.com/eduardofrafre/confdrift/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
-      <a href="/" hreflang="en" lang="en">English</a>
-    </nav>
+<footer class="ft">
+  <section id="support" class="wrap ft-give" aria-labelledby="ft-give-h">
+    <div>
+      <p class="k">Apoio</p>
+      <h2 id="ft-give-h">Gratuito, e continua gratuito.</h2>
+      <p class="lead">Uma doação paga a hospedagem e as horas que mantêm o confdrift.</p>
+      <p class="ft-ways"><a href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ" target="_blank" rel="noopener">PayPal</a><button type="button" data-pix="00020126580014br.gov.bcb.pix01369e1497a0-9a23-4910-9937-f5cec7c85f4b5204000053039865802BR5915EDUARDO FREITAS6008CRICIUMA62070503***6304BCD9" data-done="Copiado, cole no app do banco">Copiar o código Pix</button><span role="status"></span></p>
+    </div>
+    <div class="ft-qr">
+      <a href="https://www.paypal.com/donate/?hosted_button_id=N2T3FKPS2Z7DQ&amp;source=qr" target="_blank" rel="noopener"><figure data-pay="paypal"><img src="/assets/donate-qr.svg" width="132" height="132" alt="QR code da página de doação no PayPal"><figcaption>PayPal</figcaption></figure></a>
+      <figure data-pay="pix"><img src="/assets/donate-pix.svg" width="132" height="132" alt="QR code Pix para doar qualquer valor"><figcaption>Pix</figcaption></figure>
+    </div>
+    <script>
+    // Pix has no web link, only a code: on a phone the way in is copying it into
+    // the bank app. A link with ?pay=pix or ?pay=paypal (the READMEs) marks that QR.
+    (function () {
+      var box = document.currentScript.parentElement, btn = box.querySelector("[data-pix]"), st = btn.nextElementSibling;
+      var ask = /[?&]pay=(pix|paypal)\b/.exec(location.search);
+      if (ask) box.querySelector('[data-pay="' + ask[1] + '"]').classList.add("on");
+      btn.addEventListener("click", function () {
+        var done = function () { st.textContent = btn.dataset.done; setTimeout(function () { st.textContent = ""; }, 4000); };
+        navigator.clipboard ? navigator.clipboard.writeText(btn.dataset.pix).then(done) : prompt("Chave Pix", btn.dataset.pix);
+      });
+    })();
+    </script>
+  </section>
+  <div class="wrap ft-cols">
+    <div><p><b>confdrift</b></p><p>por <a href="https://eduardofrafre.com/pt-br/">Eduardo Freitas</a></p><p><a href="https://github.com/eduardofrafre/confdrift/blob/main/LICENSE" target="_blank" rel="noopener">licença MIT</a> · 2026</p></div>
+    <nav aria-label="Sites"><p class="k">Sites</p><ul><li><a href="https://eduardofrafre.com/pt-br/">eduardofrafre.com</a></li><li><a href="https://lab.eduardofrafre.com/pt-br/">Lab</a></li><li><a href="https://tools.eduardofrafre.com/pt-br/">Ferramentas</a></li><li><a href="https://studio.eduardofrafre.com/pt-br/">Studio</a></li></ul></nav>
+    <div><p class="k">Contato</p><ul><li><a href="mailto:contato@eduardofrafre.com">contato@eduardofrafre.com</a></li><li><a href="https://github.com/eduardofrafre" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://www.linkedin.com/in/eduardofrafre" target="_blank" rel="noopener">LinkedIn</a></li></ul></div>
+    <div><p class="k">Colofão</p><p>Composto em IBM Plex Sans e Mono.</p></div>
   </div>
 </footer>
 
