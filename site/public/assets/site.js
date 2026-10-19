@@ -1,3 +1,18 @@
+// Theme: the header's toggle flips dark and light and keeps the pick in the
+// `theme` cookie on eduardofrafre.com, so the family sites follow it.
+(function () {
+  var b = document.querySelector(".top .theme"), root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
+  if (!b) return;
+  var domain = /(^|\.)eduardofrafre\.com$/.test(location.hostname) ? "; Domain=eduardofrafre.com" : "";
+  function show() { var light = root.dataset.theme === "light"; b.setAttribute("aria-pressed", light); if (meta) meta.content = light ? "#f3f3f0" : "#000000"; }
+  b.addEventListener("click", function () {
+    root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light";
+    document.cookie = "theme=" + root.dataset.theme + domain + "; Path=/; Max-Age=31536000; SameSite=Lax";
+    show();
+  });
+  show();
+})();
+
 // confdrift site: copy buttons, install tabs and the playground. The
 // playground runs the real engine (Go compiled to WebAssembly), loaded the
 // first time the playground comes near the screen.

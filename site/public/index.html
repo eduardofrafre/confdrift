@@ -34,11 +34,20 @@
   if (lang === "pt") location.replace("/pt-br/" + location.search + location.hash);
 })();
 </script>
+<script>
+// Dark is the default. The toggle in the header switches to light, and the
+// pick is the `theme` cookie on eduardofrafre.com, shared with the family
+// sites. Set before the first paint to avoid a flash.
+(function () {
+  var m = document.cookie.match(/(?:^|; )theme=(light|dark)/);
+  if (m) document.documentElement.dataset.theme = m[1];
+})();
+</script>
 <meta property="og:type" content="website">
 <meta property="og:title" content="confdrift: find config drift between environments">
 <meta property="og:description" content="Staging works. Production doesn't. confdrift tells you which config key drifted, before the deploy does.">
 <meta property="og:url" content="https://confdrift.tools.eduardofrafre.com/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23000'/%3E%3Crect x='4' y='6' width='16' height='3' fill='%23e2e8e9'/%3E%3Crect x='4' y='11' width='16' height='3' fill='%23e2e8e9'/%3E%3Crect x='4' y='16' width='9' height='3' fill='%23e2e8e9'/%3E%3Crect x='15' y='16' width='5' height='3' fill='%23f2857f'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cstyle%3E.m%7Bfill:%23121315%7D.d%7Bfill:%23b3352e%7D%40media %28prefers-color-scheme:dark%29%7B.m%7Bfill:%23e2e8e9%7D.d%7Bfill:%23f2857f%7D%7D%3C/style%3E%3Crect class='m' x='2' y='4' width='20' height='3.5'/%3E%3Crect class='m' x='2' y='10.25' width='20' height='3.5'/%3E%3Crect class='m' x='2' y='16.5' width='11' height='3.5'/%3E%3Crect class='d' x='15.5' y='16.5' width='6.5' height='3.5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -49,7 +58,7 @@
 <header class="top">
   <div class="wrap">
     <a class="brand" href="/" aria-label="confdrift home">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="3.5" fill="#e2e8e9"/><rect x="2" y="10.25" width="20" height="3.5" fill="#e2e8e9"/><rect x="2" y="16.5" width="11" height="3.5" fill="#e2e8e9"/><rect x="15.5" y="16.5" width="6.5" height="3.5" fill="#f2857f"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect class="mark" x="2" y="4" width="20" height="3.5"/><rect class="mark" x="2" y="10.25" width="20" height="3.5"/><rect class="mark" x="2" y="16.5" width="11" height="3.5"/><rect class="drift" x="15.5" y="16.5" width="6.5" height="3.5"/></svg>
       confdrift
     </a>
     <nav aria-label="Main">
@@ -57,6 +66,7 @@
       <a class="sec" href="#try">Try it</a>
       <a class="sec" href="#install">Install</a>
       <a class="lang" href="/pt-br/" hreflang="pt-BR" lang="pt-BR">PT</a>
+      <button class="theme" type="button" aria-pressed="false" aria-label="Light theme" title="Light theme"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5a6.5 6.5 0 0 0 0 13z" fill="currentColor"/></svg></button>
       <a class="gh" href="https://github.com/eduardofrafre/confdrift" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
@@ -323,7 +333,7 @@ confdrift --version</pre><button class="copy" type="button" data-copy="c-mac"></
   <div class="wrap">
     <div>
       <p class="kicker">Open source</p>
-      <h2>Free, MIT licensed, and built in the open.</h2>
+      <h2>MIT licensed, and built in the open.</h2>
       <p>Found drift it missed, or a format it should read? <a class="ln" href="https://github.com/eduardofrafre/confdrift/issues" target="_blank" rel="noopener">Open an issue</a>.</p>
     </div>
     <div class="cta">
