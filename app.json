@@ -1,0 +1,90 @@
+{
+  "app": "confdrift",
+  "hosts": [
+    "confdrift.tools.eduardofrafre.com"
+  ],
+  "hosting": {
+    "en": "Cloudflare Workers, static assets from site/, with the Go engine compiled to WebAssembly for the playground",
+    "pt": "Cloudflare Workers, assets estáticos de site/, com o motor em Go compilado para WebAssembly no playground"
+  },
+  "docs": {
+    "decisions": [
+      "engines/devtools/decisions/go-for-devtools-clis.md",
+      "engines/devtools/decisions/cli-first-validation.md"
+    ],
+    "specs": [],
+    "diagrams": [],
+    "playbooks": [
+      "engines/devtools/playbooks/go-cli-tools.md",
+      "engines/devtools/playbooks/cli-first-validation.md",
+      "core/playbooks/pre-launch-security.md"
+    ]
+  },
+  "board": {
+    "file": "engines/devtools/initiatives/config-drift-detector.md",
+    "match": []
+  },
+  "scripts": [
+    {
+      "path": "site/build.sh",
+      "runs": "deploy",
+      "what": {
+        "en": "Builds the playground engine into public/assets: engine.wasm and the Go toolchain's wasm_exec.js",
+        "pt": "Monta o motor do playground em public/assets: engine.wasm e o wasm_exec.js do Go"
+      },
+      "breaks": {
+        "en": "The playground loads no engine, or one out of step with the CLI",
+        "pt": "O playground não carrega motor, ou um fora de passo com a CLI"
+      }
+    },
+    {
+      "command": "cd site && npx wrangler deploy",
+      "runs": "hand",
+      "what": {
+        "en": "Uploads the landing page and playground",
+        "pt": "Sobe a página e o playground"
+      },
+      "breaks": {
+        "en": "The live page keeps its last deploy",
+        "pt": "A página no ar segue no último deploy"
+      }
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "runs": "ci",
+      "what": {
+        "en": "Tests and vets every push and pull request",
+        "pt": "Testa e confere cada push e pull request"
+      },
+      "breaks": {
+        "en": "A broken CLI can merge unnoticed",
+        "pt": "Uma CLI quebrada pode entrar sem ninguém ver"
+      }
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "runs": "ci",
+      "what": {
+        "en": "Builds and publishes the release binaries on a tag",
+        "pt": "Monta e publica os binários numa tag"
+      },
+      "breaks": {
+        "en": "No downloadable release for a new version",
+        "pt": "Nenhuma versão para baixar"
+      }
+    },
+    {
+      "path": "core/tooling/site-family/footer.py",
+      "repo": "eduardofrafre/hive-mind-core",
+      "runs": "hand",
+      "what": {
+        "en": "Writes the shared footer (support block, QR codes, four columns) in English and pt-BR",
+        "pt": "Escreve o rodapé comum (apoio, QR codes, quatro colunas) em inglês e pt-BR"
+      },
+      "breaks": {
+        "en": "Footers drift apart between the family sites",
+        "pt": "Os rodapés divergem entre os sites da família"
+      }
+    }
+  ]
+}
