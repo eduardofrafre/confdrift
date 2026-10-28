@@ -7,23 +7,6 @@
     "en": "Cloudflare Workers, static assets from site/, with the Go engine compiled to WebAssembly for the playground",
     "pt": "Cloudflare Workers, assets estáticos de site/, com o motor em Go compilado para WebAssembly no playground"
   },
-  "docs": {
-    "decisions": [
-      "engines/devtools/decisions/go-for-devtools-clis.md",
-      "engines/devtools/decisions/cli-first-validation.md"
-    ],
-    "specs": [],
-    "diagrams": [],
-    "playbooks": [
-      "engines/devtools/playbooks/go-cli-tools.md",
-      "engines/devtools/playbooks/cli-first-validation.md",
-      "core/playbooks/pre-launch-security.md"
-    ]
-  },
-  "board": {
-    "file": "engines/devtools/initiatives/config-drift-detector.md",
-    "match": []
-  },
   "scripts": [
     {
       "path": "site/build.sh",
@@ -71,19 +54,6 @@
       "breaks": {
         "en": "No downloadable release for a new version",
         "pt": "Nenhuma versão para baixar"
-      }
-    },
-    {
-      "path": "core/tooling/site-family/footer.py",
-      "repo": "eduardofrafre/hive-mind-core",
-      "runs": "hand",
-      "what": {
-        "en": "Writes the shared footer (support block, QR codes, four columns) in English and pt-BR",
-        "pt": "Escreve o rodapé comum (apoio, QR codes, quatro colunas) em inglês e pt-BR"
-      },
-      "breaks": {
-        "en": "Footers drift apart between the family sites",
-        "pt": "Os rodapés divergem entre os sites da família"
       }
     }
   ]
